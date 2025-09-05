@@ -1,102 +1,106 @@
-# python-package-template
-This is a template on how to package a simple Python project
+# Xeryon Motion Controller Library
 
-## Table of Contents
+This module provides a Python interface to communicate with and control Xeryon precision stages. It supports serial communication, axis movement, settings management, and safe handling of errors and edge cases.
 
-1. Installation
-2. Setting Up Your Package
-3. Installing Dependencies
-4. Building Your Package
-5. Publishing to PyPI
-
-## Installation
-
-To install the package in editable mode (ideal for development), follow these steps:
-
-### Requirements
-
-- Python 3.7 or higher
-- `pip` (ensure it's the latest version)
-- `setuptools` 42 or higher (for building the package)
-
-### 1. Clone the repository
-
-First, clone the repository to your local machine:
-
-```bash
-git clone https://github.com/yourusername/your-package-name.git
-cd your-package-name
-```
-
-### 2. Set Up Your Python Environment
-
-Create a virtual environment for your package:
-
-```bash
-python -m venv venv
-source venv/bin/activate
-```
-
-### 3. Install Build Dependencies
-
-Make sure setuptools and pip are up to date:
-
-```bash
-pip install --upgrade pip setuptools wheel
-```
-
-## Setting Up Your Package
-### 1. Update pyproject.toml
-
-The pyproject.toml file contains the configuration for building and packaging your Python project. You'll want to customize this to reflect your package's name, version, dependencies, license, etc.
-```yml
-    name: The name of your package.
-    version: The version of your package (e.g., "0.1.0").
-    dependencies: List any runtime dependencies your package requires (e.g., requests, numpy).
-    license: Specify your package's license, either as text or a file. For example:
-        license = { text = "MIT" }
-        Or, if you have a LICENSE file: license = { file = "LICENSE.txt" }
-```
-
-### 2. Update README.md
-
-Edit this README file to reflect your package's functionality.
-
-## Installing Dependencies
-
-To install your package in editable mode for development, use the following command:
-
-```bash
-pip install -e .
-```
-
-This will install the package, allowing you to edit it directly and have changes take effect immediately without reinstalling.
-
-To install any optional dependencies, such as development dependencies, use:
-
-```bash
-pip install -e .[dev]
-```
-
-## Building Your Package
-
-To build your package for distribution (e.g., for uploading to PyPI), you can use:
-
-```bash
-python -m build
-```
-
-This will create .tar.gz and .whl files in the dist/ directory.
-
-## Publishing to PyPI
-
-To publish your package to PyPI, you can use the twine tool:
-
-```bash
-pip install twine
-twine upload dist/*
-```
-
-You'll need to have a PyPI account and have your credentials set up for this.
+## Features
+- Serial or TCP/IP communication with Xeryon controllers
+- Multi-axis system support
+- Configurable stage settings from a file
+- Blocking/non-blocking movement
+- Real-time data logging and error monitoring
+- Configurable output via logger
 
 ---
+
+## Folder Structure
+```
+xeryon/
+├── __init__.py
+├── axis.py             # Axis class abstraction
+├── communication.py    # Low-level serial communication logic
+├── config.py           # Centralized constants and flags
+├── controller.py       # XeryonController high-level interface
+├── stage.py            # Stage definitions (e.g. XLS, XLA, XRTU)
+├── units.py            # Unit definitions and conversion
+├── utils.py            # Logging, time utilities, formatting helpers
+├── settings_default.txt
+└── tests/
+    ├── test_axis.py
+    ├── test_communication.py
+    ├── test_controller.py
+    └── test_utils.py
+```
+
+---
+
+## Getting Started
+### Prerequisites
+- Python 3.7+
+- Xeryon controller connected via serial
+- `pyserial` library
+
+
+### Example Usage
+#### Serial Connection
+```python
+from xeryon.controller import XeryonController
+from xeryon.stage import Stage
+
+# Initialize controller
+controller = XeryonController(COM_port="/dev/ttyUSB0")
+controller.addAxis(Stage.XLS_312, "X")
+controller.start()
+
+# Move axis
+x_axis = controller.getAxis("X")
+x_axis.setDPOS(1000)  # Move to position 1000 in current units
+
+controller.stop()
+```
+#### TCP/IP Connection
+```python
+from xeryon.controller import XeryonController
+from xeryon.stage import Stage
+
+# Initialize controller via TCP/IP (e.g., through a terminal server)
+controller = XeryonController(
+    connection_type="tcp",
+    tcp_host="192.168.1.100",
+    tcp_port=12345
+)
+controller.add_axis(Stage.XLS_312, "X")
+controller.start()
+
+# Move axis
+x_axis = controller.get_axis("X")
+x_axis.set_DPOS(1000)
+
+controller.stop()
+```
+
+---
+
+## Settings File
+Place a `settings_default.txt` file in the root directory. Format:
+```txt
+X:LLIM=0
+X:HLIM=100000
+X:SSPD=2000
+POLI=5
+```
+Each line sets a controller or axis setting.
+
+---
+
+## Logging
+The `utils.py` module provides a `output_console` function with logger integration. Messages can be printed to stdout or stderr depending on severity.
+
+---
+
+## 🧪 Testing
+Tests are written using `pytest`. Run with:
+```bash
+pytest
+```
+
+
