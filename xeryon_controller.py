@@ -28,7 +28,7 @@ class XeryonController:
         controller.start()
     """
     # pylint: disable=too-many-arguments
-    def __init__(self, COM_port=None, baudrate=115200, log=True,
+    def __init__(self, COM_port=None, baudrate=115200, log=True, logfile=None,
                  settings_filename=SETTINGS_FILENAME,
                  connection_type='serial', tcp_host=None, tcp_port=None):
         """
