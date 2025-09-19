@@ -47,19 +47,17 @@ class XeryonController:
         """
         
         # Logging
+        logfile = __name__.rsplit('.', 1)[-1] + '.log'
+        self.logger = logging.getLogger(logfile)
+        self.logger.setLevel(logging.INFO)
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        )
+
         if log:
-            if logfile is None:
-                logfile = __name__.rsplit('.', 1)[-1] + '.log'
-            self.logger = logging.getLogger(logfile)
-            self.logger.setLevel(logging.INFO)
-            formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-            )
             file_handler = logging.FileHandler(logfile)
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)
-        else:
-            self.logger = None
 
         self.comm = Communication(
             self, COM_port, baudrate, self.logger,
@@ -202,6 +200,8 @@ class XeryonController:
         If there are commands for axis that don't exist, it just ignores them.
         """
         filepath = settings_file if settings_file is not None else self.settings_filename
+        
+        print(filepath)
 
         try:
             with open(filepath, "r") as file:
