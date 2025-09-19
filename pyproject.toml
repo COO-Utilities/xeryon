@@ -29,7 +29,6 @@ Repository = "https://github.com/COO-Utils/xeryon"
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
     "pytest-mock",
     "pytest", 
     "black",
@@ -37,3 +36,10 @@ dev = [
 ]
 [tool.setuptools.packages.find]
 include = ["axis", "config", "units", "utils", "communication", "stage", "xeryon_controller"]
+where = ["."]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.setuptools]
+py-modules = ["xeryon"]

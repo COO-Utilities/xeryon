@@ -4,7 +4,6 @@ import math
 from .units import Units
 from .config import DEFAULT_POLI_VALUE, DISABLE_WAITING, DEBUG_MODE, NOT_SETTING_COMMANDS, AUTO_SEND_ENBL
 from .utils import get_dpos_epos_string, get_actual_time
-import hispec.util.helper.logger_utils as logger_utils
 
 
 class Axis:
