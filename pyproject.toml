@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "xeryon"
 version = "0.1.0"
+dependencies = [
+  "pyserial"
+]
 description = "This module provides a Python interface to communicate with and control Xeryon precision stages. It supports serial communication, axis movement, settings management, and safe handling of errors and edge cases."
 authors = [
     { name = "Michael Langmayr", email = "langmayr@caltech.edu" }
