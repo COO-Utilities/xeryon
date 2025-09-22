@@ -81,7 +81,7 @@ controller.stop()
 ---
 
 ## Settings File
-Place a `settings_default.txt` file in the root directory. Format:
+Place a `settings_default.txt` file in the config directory. Format:
 ```txt
 X:LLIM=0
 X:HLIM=100000
