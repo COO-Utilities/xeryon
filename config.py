@@ -1,7 +1,7 @@
 # pylint: skip-file
 # Configuration constants for the Xeryon controller library
 
-SETTINGS_FILENAME = "config/xeryon_default_settings.txt"
+SETTINGS_FILENAME = "hispec/util/config/xeryon_default_settings.txt"
 LIBRARY_VERSION = "v1.64"
 
 # DEBUG MODE
