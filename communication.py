@@ -114,7 +114,7 @@ class Communication:
                         self.sio.write(msg)
                         self.sio.flush()
                 except Exception as e:
-                    self.logger.info(f"Write error: {e}", error=True)
+                    self.logger.error(f"Write error: {e}")
                     continue
 
             # Read responses
@@ -142,7 +142,7 @@ class Communication:
                             axis.receive_data(reading)
 
             except Exception as e:
-                self.logger.info(f"Read error: {e}", error=True)
+                self.logger.error(f"Read error: {e}")
 
             if external_while_loop:
                 return
