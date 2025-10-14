@@ -302,3 +302,33 @@ class XeryonController:
             if "04D8" in str(port.hwid):
                 self.set_com_port(str(port.device))
                 break
+
+    def is_communication_thread_alive(self):
+        """
+        Check if the communication thread is still running.
+
+        :return: True if thread is alive, False otherwise
+        """
+        return self.comm.is_thread_alive()
+
+    def get_communication_health_status(self):
+        """
+        Get detailed health status of the communication thread.
+
+        :return: Dictionary with thread health information including:
+                 - thread_alive: bool
+                 - last_heartbeat: timestamp or None
+                 - time_since_heartbeat: float (seconds) or None
+                 - heartbeat_stale: bool
+        """
+        return self.comm.get_thread_health_status()
+
+    def check_communication_health(self, raise_on_dead=False):
+        """
+        Check if communication thread is healthy and optionally raise exception if not.
+
+        :param raise_on_dead: If True, raise an exception when thread is dead
+        :return: True if healthy, False otherwise
+        :raises Exception: If raise_on_dead=True and thread is not healthy
+        """
+        return self.comm.check_thread_health(raise_on_dead=raise_on_dead)
