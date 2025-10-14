@@ -158,7 +158,7 @@ class Communication:
             except Exception as e:
                 self.logger.error(f"CRITICAL: Communication thread encountered fatal error: {e}", exc_info=True)
                 self.logger.error("Communication thread is terminating!")
-                raise  # Re-raise to kill the thread, but we've logged it first
+                raise
 
     def is_thread_alive(self):
         """
