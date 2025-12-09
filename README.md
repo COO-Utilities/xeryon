@@ -25,14 +25,17 @@ This module provides a Python interface to communicate with and control Xeryon p
 from xeryon.controller import Xeryon
 from xeryon.stage import Stage
 
-# Initialize controller
-controller = Xeryon(COM_port="/dev/ttyUSB0")
-controller.addAxis(Stage.XLS_312, "X")
+# Initialize 3-axis controller
+controller = Xeryon(COM_port="/dev/ttyACM0")
+# All axes must be added, even if not all will be used
+controller.addAxis(Stage.XLS_5_3N, "A")
+controller.addAxis(Stage.XLS_5_3N, "B")
+controller.addAxis(Stage.XLS_5_3N, "C")
 controller.start()
 
 # Move axis
-x_axis = controller.getAxis("X")
-x_axis.setDPOS(1000)  # Move to position 1000 in current units
+A_axis = controller.getAxis("A")
+A_axis.setDPOS(1)  # Move to position 1 in current units
 
 controller.stop()
 ```
@@ -44,12 +47,15 @@ from xeryon import Stage
 
 # Initialize controller
 controller = Tcp_xeryon(tcp_address="127.0.0.1", tcp_port=10001)
-controller.addAxis(Stage.XLS_312, "X")
+# All axes must be added, even if not all will be used
+controller.addAxis(Stage.XLS_5_3N, "A")
+controller.addAxis(Stage.XLS_5_3N, "B")
+controller.addAxis(Stage.XLS_5_3N, "C")
 controller.start()
 
 # Move axis
-x_axis = controller.getAxis("X")
-x_axis.setDPOS(1000)  # Move to position 1000 in current units
+A_axis = controller.getAxis("A")
+A_axis.setDPOS(1)  # Move to position 1000 in current units
 
 controller.stop()
 ```
@@ -58,9 +64,9 @@ controller.stop()
 ## Settings File
 Place a `settings.txt` file in the config directory. Format:
 ```txt
-X:LLIM=0
-X:HLIM=100000
-X:SSPD=2000
+A:LLIM=0
+A:HLIM=100000
+A:SSPD=2000
 POLI=5
 ```
 Each line sets a controller or axis setting.
