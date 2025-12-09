@@ -1,8 +1,11 @@
+""" TCP enabled Xeryon controller """
 import time
 from Xeryon_HISPEC import outputConsole, Axis, SETTINGS_FILENAME
 from tcp_communication import Communication
 
-class Tcp_xeryon:
+
+class TcpXeryon:
+    """ TCP version Xeryon """
     axis_list = None  # A list storing all the axis in the system.
     axis_letter_list = None # A list storing all the axis_letters in the system.
     master_settings = None

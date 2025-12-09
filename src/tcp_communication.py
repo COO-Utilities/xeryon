@@ -1,8 +1,11 @@
+""" TCP version of the Xeryon communication class """
 import socket
 import threading
+import time
 from Xeryon_HISPEC import outputConsole
 
 class Communication:
+    """ TCP version of the Xeryon communication class """
     readyToSend = None  # List that contains commands that are ready to send.
     stop_thread = False  # Boolean for stopping the thread.
     thread = None
@@ -105,6 +108,10 @@ class Communication:
 
                 if external_while_loop is True:
                     return None
+
+                # NOTE: (HISPEC MOD) added a delay here so that we don't use as much CPU power on this loop
+                time.sleep(0.01)
+
             # Close the tcp communication here, so we have a clean exit.     
             self.socket.close()
             print("Communication has stopped. ")
