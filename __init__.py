@@ -2,10 +2,11 @@
 Exposes the main public interface for the Xeryon motion control library.
 
 Includes:
-- XeryonController: High-level interface for Xeryon motion controllers.
-- Stage: Represents a single controllable motion stage.
+- Xeryon: High-level interface for Xeryon motion controllers.
+- Stage: Xeryon stage object
 """
-from .xeryon_controller import XeryonController
-from .stage import Stage
 
-__all__ = ["XeryonController", "Stage"]
+from src.Xeryon_HISPEC import Xeryon, Stage
+from src.tcp_xeryon import Tcp_xeryon
+
+__all__ = ["Xeryon", "Stage", "Tcp_xeryon"]

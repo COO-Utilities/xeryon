@@ -1,0 +1,147 @@
+INFO=4
+POLI=97
+
+
+A:% S_202505_046-XLS_3_80_5
+A:% For use with Windows Interface V4_2_59
+A:% payload: 300g
+A:% environment: 	
+A:INFO=4
+A:POLI=97
+A:FREQ=87000
+A:FRQ2=86000
+A:HFRQ=88000
+A:LFRQ=83000
+A:LLIM=-25
+A:HLIM=25
+A:PROP=150
+A:PRO2=120
+A:MPRO=250
+A:INTF=15
+A:MASS=200 % TRANS
+A:MMAS=1000 %NPT
+A:ZON1=0.001 %TRANS
+A:ZON2=0.1 %TRANS
+A:MSPD=50
+A:SSPD=20 %TRANS
+A:ISPD=10 %TRANS
+A:ACCE=100
+A:DECE=3
+A:ILIM=200000
+A:ELIM=0%800000
+A:SLIM=500000%50000 heeft ook al eens geholpen met stapjes zetten
+A:ENCD=1
+A:ACTD=1
+A:ENCO=-30000
+A:PTOL=100
+A:PTO2=120
+A:TOUT=1000
+A:TOU2=60
+A:TOU3=0
+A:PHAC=0
+A:PHAS=90 %TRANS
+A:DUCO=0
+A:MIMP=20 %TRANS
+A:MAMP=45 %TRANS
+A:AMPL=45 %TRANS
+A:DUTY=32768
+A:OFSA=0
+A:OFSB=0
+A:SQEZ=0
+A:FILE=0
+A:FILG=0
+A:FILA=1
+A:FILP=1
+A:COMP=0
+A:DLAY=10
+A:DTIM=1
+A:ECHO=0
+A:INDA=1
+A:ENBR=1
+A:ENBL=0
+A:GPIO=0
+A:PLIM=0
+A:UART=0 %NPT
+A:PWMF=1000 %NPT
+A:TRGS=0
+A:TRGW=0
+A:TRGP=0
+A:TRGN=0
+A:STPS=1%NPT
+A:LEAD=0 %NPT
+A:FLAG=0 %NPT
+A:% generated with version 6.2 	
+A:% NPT: these settings are Not Passed Through (NPT) by the windows interface, thus are not sent to the controller.
+A:% TRANS: these settings are translated by the windows interface before being sent to the controller.
+
+B:% S_202505_045-XLS_3_80_5
+B:% For use with Windows Interface V4_2_59
+B:% payload: 300g
+B:% environment: 	
+B:INFO=4
+B:POLI=97
+B:FREQ=87000
+B:FRQ2=85500
+B:HFRQ=88000
+B:LFRQ=84000
+B:LLIM=-25
+B:HLIM=25
+B:PROP=80
+B:PRO2=50
+B:MPRO=250
+B:INTF=35
+B:MASS=200 % TRANS
+B:MMAS=1000 %NPT
+B:ZON1=0.001 %TRANS
+B:ZON2=0.1 %TRANS
+B:MSPD=50
+B:SSPD=20 %TRANS
+B:ISPD=10 %TRANS
+B:ACCE=100
+B:DECE=3
+B:ILIM=200000
+B:ELIM=0%800000
+B:SLIM=500000%50000 heeft ook al eens geholpen met stapjes zetten
+B:ENCD=1
+B:ACTD=1
+B:ENCO=0
+B:PTOL=100
+B:PTO2=120
+B:TOUT=1000
+B:TOU2=60
+B:TOU3=0
+B:PHAC=0
+B:PHAS=90 %TRANS
+B:DUCO=0
+B:MIMP=20 %TRANS
+B:MAMP=45 %TRANS
+B:AMPL=45 %TRANS
+B:DUTY=32768
+B:OFSA=0
+B:OFSB=0
+B:SQEZ=0
+B:FILE=0
+B:FILG=0
+B:FILA=1
+B:FILP=1
+B:COMP=0
+B:DLAY=10
+B:DTIM=1
+B:ECHO=0
+B:INDA=1
+B:ENBR=1
+B:ENBL=0
+B:GPIO=0
+B:PLIM=0
+B:UART=0 %NPT
+B:PWMF=1000 %NPT
+B:TRGS=0
+B:TRGW=0
+B:TRGP=0
+B:TRGN=0
+B:STPS=1%NPT
+B:LEAD=0 %NPT
+B:FLAG=0 %NPT
+B:% generated with version 6.2 	
+B:% NPT: these settings are Not Passed Through (NPT) by the windows interface, thus are not sent to the controller.
+B:% TRANS: these settings are translated by the windows interface before being sent to the controller.
