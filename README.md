@@ -31,7 +31,8 @@ controller = Xeryon(COM_port="/dev/ttyACM0")
 controller.addAxis(Stage.XLS_5_3N, "A")
 controller.addAxis(Stage.XLS_5_3N, "B")
 controller.addAxis(Stage.XLS_5_3N, "C")
-controller.start()
+# external_settings_default - used to point to the right settings file
+controller.start(external_settings_default=None)
 
 # Move axis
 A_axis = controller.getAxis("A")
@@ -51,7 +52,8 @@ controller = Tcp_xeryon(tcp_address="127.0.0.1", tcp_port=10001)
 controller.addAxis(Stage.XLS_5_3N, "A")
 controller.addAxis(Stage.XLS_5_3N, "B")
 controller.addAxis(Stage.XLS_5_3N, "C")
-controller.start()
+# external_settings_default - used to point to the right settings file
+controller.start(external_settings_default=None)
 
 # Move axis
 A_axis = controller.getAxis("A")
