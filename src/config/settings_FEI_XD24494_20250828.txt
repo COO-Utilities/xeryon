@@ -1,0 +1,223 @@
+INFO=4
+POLI=97
+
+
+A:% S_202505_050-XVP_80_5
+A:% For use with Windows Interface V4_2_59
+A:% payload: 560g	
+A:% environment: 	
+A:INFO=4
+A:POLI=97
+A:FREQ=88000
+A:FRQ2=86000
+A:HFRQ=89000
+A:LFRQ=84500
+A:LLIM=-5
+A:HLIM=5
+A:PROP=30	% Alternative 1: 60  | 2: 25
+A:PRO2=15	% Alternative 1: 50  | 2: 10
+A:MPRO=250
+A:INTF=60	% Alternative 1: 30  | 2: 35
+A:MASS=200 % TRANS
+A:MMAS=1000 %NPT
+A:ZON1=0.0001 %TRANS
+A:ZON2=0.003 %TRANS
+A:MSPD=10
+A:SSPD=3 %TRANS
+A:ISPD=2 %TRANS
+A:ACCE=8
+A:DECE=2
+A:ILIM=200000
+A:ELIM=0%800000
+A:SLIM=500000%50000 heeft ook al eens geholpen met stapjes zetten
+A:ENCD=1
+A:ACTD=0
+A:ENCO=-709998
+A:PTOL=30
+A:PTO2=40
+A:TOUT=1000
+A:TOU2=60
+A:TOU3=0
+A:PHAC=10
+A:PHAS=90 %TRANS
+A:DUCO=0
+A:MIMP=35 %TRANS
+A:MAMP=45 %TRANS
+A:AMPL=45 %TRANS
+A:DUTY=32768
+A:OFSA=0
+A:OFSB=0
+A:SQEZ=0
+A:FILE=0
+A:FILG=0
+A:FILA=1
+A:FILP=1
+A:COMP=0
+A:DLAY=5
+A:DTIM=10	% Alternative 1: 20 | 2: 15
+A:ECHO=0
+A:INDA=1
+A:ENBR=1
+A:ENBL=0
+A:GPIO=0
+A:PLIM=0
+A:UART=0 %NPT
+A:PWMF=1000 %NPT
+A:TRGS=0
+A:TRGW=0
+A:TRGP=0
+A:TRGN=0
+A:STPS=1%NPT
+A:LEAD=0 %NPT
+A:FLAG=0 %NPT
+A:% generated with version 6.2 	
+A:% NPT: these settings are Not Passed Through (NPT) by the windows interface, thus are not sent to the controller.
+A:% TRANS: these settings are translated by the windows interface before being sent to the controller.
+
+
+B:% S_202505_048-XLS_3_80_5
+B:% For use with Windows Interface V4_2_59
+B:% payload: 300g
+B:% environment: 	
+B:INFO=4
+B:POLI=97
+B:FREQ=87000
+B:FRQ2=86000
+B:HFRQ=88000
+B:LFRQ=84000
+B:LLIM=-25
+B:HLIM=25
+B:PROP=130
+B:PRO2=60
+B:MPRO=250
+B:INTF=35
+B:MASS=200 % TRANS
+B:MMAS=1000 %NPT
+B:ZON1=0.001 %TRANS
+B:ZON2=0.01 %TRANS
+B:MSPD=50
+B:SSPD=5 %TRANS
+B:ISPD=10 %TRANS
+B:ACCE=7		
+B:DECE=3	
+B:ILIM=200000
+B:ELIM=0%800000
+B:SLIM=500000%50000 heeft ook al eens geholpen met stapjes zetten
+B:ENCD=1
+B:ACTD=1
+B:ENCO=-40000
+B:PTOL=30
+B:PTO2=40
+B:TOUT=1000
+B:TOU2=60
+B:TOU3=0
+B:PHAC=0
+B:PHAS=90 %TRANS
+B:DUCO=1
+B:MIMP=25 %TRANS
+B:MAMP=45 %TRANS
+B:AMPL=45 %TRANS
+B:DUTY=32768
+B:OFSA=0
+B:OFSB=0
+B:SQEZ=0
+B:FILE=0
+B:FILG=0
+B:FILA=1
+B:FILP=1
+B:COMP=0
+B:DLAY=10
+B:DTIM=1
+B:ECHO=0
+B:INDA=1
+B:ENBR=1
+B:ENBL=0
+B:GPIO=0
+B:PLIM=0
+B:UART=0 %NPT
+B:PWMF=1000 %NPT
+B:TRGS=0
+B:TRGW=0
+B:TRGP=0
+B:TRGN=0
+B:STPS=1%NPT
+B:LEAD=0 %NPT
+B:FLAG=0 %NPT
+B:% generated with version 6.2 	
+B:% NPT: these settings are Not Passed Through (NPT) by the windows interface, thus are not sent to the controller.
+B:% TRANS: these settings are translated by the windows interface before being sent to the controller.
+
+
+C:% S_202504_148-XLS_3_40_5
+C:% For use with Windows Interface V4_2_59
+C:% payload: 220g
+C:% environment: 	
+C:INFO=4
+C:POLI=97
+C:FREQ=88000
+C:FRQ2=86500
+C:HFRQ=89000
+C:LFRQ=84500
+C:LLIM=-12.5
+C:HLIM=12.5
+C:PROP=100
+C:PRO2=70
+C:MPRO=250
+C:INTF=15
+C:MASS=100 % TRANS
+C:MMAS=1000 %NPT
+C:ZON1=0.001 %TRANS
+C:ZON2=0.1 %TRANS
+C:MSPD=50
+C:SSPD=10 %TRANS
+C:ISPD=10 %TRANS
+C:ACCE=10
+C:DECE=5
+C:ILIM=200000
+C:ELIM=0%800000
+C:SLIM=500000%50000 heeft ook al eens geholpen met stapjes zetten
+C:ENCD=1
+C:ACTD=1
+C:ENCO=5000
+C:PTOL=80
+C:PTO2=100
+C:TOUT=1000
+C:TOU2=60
+C:TOU3=0
+C:PHAC=0
+C:PHAS=90 %TRANS
+C:DUCO=0
+C:MIMP=20 %TRANS
+C:MAMP=45 %TRANS
+C:AMPL=45 %TRANS
+C:DUTY=32768
+C:OFSA=0
+C:OFSB=0
+C:SQEZ=0
+C:FILE=0
+C:FILG=0
+C:FILA=1
+C:FILP=1
+C:COMP=0
+C:DLAY=10
+C:DTIM=1
+C:ECHO=0
+C:INDA=1
+C:ENBR=1
+C:ENBL=0
+C:GPIO=0
+C:PLIM=0
+C:UART=0 %NPT
+C:PWMF=1000 %NPT
+C:TRGS=0
+C:TRGW=0
+C:TRGP=0
+C:TRGN=0
+C:STPS=1%NPT
+C:LEAD=0 %NPT
+C:FLAG=0 %NPT
+C:% generated with version 6.2 	
+C:% NPT: these settings are Not Passed Through (NPT) by the windows interface, thus are not sent to the controller.
+C:% TRANS: these settings are translated by the windows interface before being sent to the controller.
+
+

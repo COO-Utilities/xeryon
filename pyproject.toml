@@ -39,7 +39,7 @@ dev = [
 ]
 [tool.setuptools.packages.find]
 include = ["axis", "config", "units", "utils", "communication", "stage", "xeryon_controller"]
-where = ["."]
+where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
