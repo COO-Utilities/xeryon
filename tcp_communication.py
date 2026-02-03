@@ -2,7 +2,7 @@
 import socket
 import threading
 import time
-from Xeryon_HISPEC import outputConsole
+from .Xeryon_HISPEC import outputConsole
 
 class Communication:
     """ TCP version of the Xeryon communication class """

@@ -1,7 +1,7 @@
 """ TCP enabled Xeryon controller """
 import time
-from Xeryon_HISPEC import outputConsole, Axis, SETTINGS_FILENAME
-from tcp_communication import Communication
+from .Xeryon_HISPEC import outputConsole, Axis, SETTINGS_FILENAME
+from .tcp_communication import Communication
 
 
 class TcpXeryon:

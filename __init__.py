@@ -6,7 +6,7 @@ Includes:
 - Stage: Xeryon stage object
 """
 
-from src.Xeryon_HISPEC import Xeryon, Stage
-from src.tcp_xeryon import TcpXeryon
+from .Xeryon_HISPEC import Xeryon, Stage
+from .tcp_xeryon import TcpXeryon
 
 __all__ = ["Xeryon", "Stage", "TcpXeryon"]
