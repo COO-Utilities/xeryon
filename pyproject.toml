@@ -6,9 +6,10 @@ build-backend = "setuptools.build_meta"
 name = "xeryon"
 version = "0.1.0"
 dependencies = [
-  "pyserial"
+  "pyserial",
+  "hardware_device_base"
 ]
-description = "This module provides a Python interface to communicate with and control Xeryon precision stages. It supports serial communication, axis movement, settings management, and safe handling of errors and edge cases."
+description = "This module provides a Python interface to communicate with and control Xeryon precision stages over USB serial or TCP. It supports multi-axis controllers, axis movement, settings management, and safe handling of errors and edge cases."
 authors = [
     { name = "Michael Langmayr", email = "langmayr@caltech.edu" }
 ]
@@ -37,12 +38,15 @@ dev = [
     "black",
     "flake8"
 ]
-[tool.setuptools.packages.find]
-include = ["axis", "config", "units", "utils", "communication", "stage", "xeryon_controller"]
-where = ["src"]
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
 [tool.setuptools]
-py-modules = ["xeryon"]
+packages = ["xeryon"]
+
+[tool.setuptools.package-dir]
+xeryon = "."
+
+[tool.pylint.main]
+# Xeryon.py is vendored from the manufacturer; see VENDOR_PATCHES.md
+ignore = ["Xeryon.py"]
