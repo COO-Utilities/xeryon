@@ -7,7 +7,7 @@ name = "xeryon"
 version = "0.1.0"
 dependencies = [
   "pyserial",
-  "hardware_device_base"
+  "hardware_device_base@git+https://github.com/COO-Utilities/hardware_device_base@v1.0.1"
 ]
 description = "This module provides a Python interface to communicate with and control Xeryon precision stages over USB serial or TCP. It supports multi-axis controllers, axis movement, settings management, and safe handling of errors and edge cases."
 authors = [
