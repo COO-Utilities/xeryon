@@ -152,9 +152,14 @@ def test_connect_without_send_settings_leaves_controller_alone(connect):
     assert port.commands("SSPD") == ["A:SSPD=?", "B:SSPD=?"]
 
 
-def test_connect_with_send_settings_pushes_the_file(connect):
-    _, port = connect(send_settings=True)
-    assert "A:SSPD=5000" in port.written
+def test_connect_refuses_to_push_settings_over_tcp(connect):
+    with pytest.raises(ValueError, match="does not work over the terminal server"):
+        connect(send_settings=True)
+
+
+def test_connect_does_not_enable_the_amplifiers(connect):
+    _, port = connect()
+    assert port.commands("ENBL") == []
 
 
 def test_connect_raises_when_the_controller_is_silent(monkeypatch, settings_file):

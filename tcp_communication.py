@@ -96,16 +96,14 @@ class SocketPort:
 class TcpCommunication(Communication):
     """Communication that reaches the controller over a terminal server."""
 
-    def __init__(self, xeryon_object, host: str, port: int,
-                 read_timeout: float = DEFAULT_READ_TIMEOUT_S,
-                 connect_timeout: float = DEFAULT_CONNECT_TIMEOUT_S) -> None:
+    def __init__(self, xeryon_object, host: str, port: int) -> None:
         # COM_port doubles as the label in the library's own error messages,
         # and leaving it None would send Communication.start() port-hunting
         super().__init__(xeryon_object, f"{host}:{port}", baud=0)
         self.host = host
         self.port = int(port)
-        self.read_timeout = read_timeout
-        self.connect_timeout = connect_timeout
+        self.read_timeout = DEFAULT_READ_TIMEOUT_S
+        self.connect_timeout = DEFAULT_CONNECT_TIMEOUT_S
 
     def openPort(self) -> SocketPort:  # noqa: N802  (vendor library naming)
         """Open the socket the communication thread reads and writes."""

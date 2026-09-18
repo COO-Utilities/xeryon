@@ -105,7 +105,7 @@ class Xeryon:
         return len(self.getAllAxis()) <= 1
 
     def start(self, external_communication_thread=False, external_settings_default=None,
-              do_reset=True, send_settings=None):
+              do_reset=True, send_settings=None, enable_axes=True):
         """Start the system. Must be called before any other command.
 
         Starts the serial communication, resets all axes, loads and sends
@@ -129,6 +129,10 @@ class Xeryon:
                 library's cache but don't push it to the controller, which
                 keeps what it has saved in flash. None means "follow
                 AUTO_SEND_SETTINGS". (HISPEC)
+            enable_axes: If False, leave the amplifiers as they are instead
+                of sending ENBL=1. Closing the loop on an axis whose DPOS
+                differs from its EPOS makes it drive to DPOS, so connecting
+                is not the place to decide that. (HISPEC)
 
         Returns:
             The internal data-processing function if
@@ -161,8 +165,9 @@ class Xeryon:
             for axis in self.getAllAxis():
                 axis.sendSettings()
 
-        for axis in self.getAllAxis():
-            axis.sendCommand("ENBL=1")
+        if enable_axes:
+            for axis in self.getAllAxis():
+                axis.sendCommand("ENBL=1")
 
         # Request a few settings back so the library's cache is in sync
         # with the controller.
@@ -172,7 +177,7 @@ class Xeryon:
             axis.sendCommand("SSPD=?")
             axis.sendCommand("PTO2=?")
             axis.sendCommand("PTOL=?")
-            if "XRTA" in str(axis.stage):
+            if enable_axes and "XRTA" in str(axis.stage):
                 axis.sendCommand("ENBL=3")
 
         if external_communication_thread:

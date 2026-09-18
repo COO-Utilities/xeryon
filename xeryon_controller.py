@@ -85,9 +85,10 @@ class XeryonController(HardwareMotionBase):
             raise ValueError(f"axis {letter} is already configured")
         self._specs.append((letter, resolve_stage(stage), resolve_units(units)))
 
-    def connect(self, host: Optional[str] = None, port: Optional[int] = None,  # pylint: disable=W0221
-                com_port: Optional[str] = None, baudrate: int = DEFAULT_BAUDRATE,
+    def connect(self, host: Optional[str] = None, port: Optional[int] = None,  # pylint: disable=W0221,R0913
+                com_port: Optional[str] = None, *, baudrate: int = DEFAULT_BAUDRATE,
                 do_reset: bool = False, send_settings: bool = False,
+                enable_axes: bool = False,
                 data_timeout: float = DEFAULT_DATA_TIMEOUT_S) -> None:
         """Connect to the controller over TCP or USB serial.
 
@@ -96,10 +97,15 @@ class XeryonController(HardwareMotionBase):
         :param str com_port: Serial device, as an alternative to host/port.
         :param int baudrate: Baudrate, for a serial connection.
         :param bool do_reset: Reset the axes on connect. Off by default: a
-            reset invalidates the encoder index, and a daemon reconnecting to
-            a referenced stage should not silently cost it its reference.
+            reset invalidates the encoder index, and reconnecting to a
+            referenced stage should not silently cost it its reference.
         :param bool send_settings: Push the settings file to the controller.
-            Off by default, leaving the controller on what it has in flash.
+            Off by default, leaving the controller on what it has in flash,
+            and rejected outright over TCP, where it does not work.
+        :param bool enable_axes: Send ENBL=1 to every axis on connect. Off by
+            default: closing the loop on an axis whose commanded position
+            differs from where it sits makes it drive there, which is not
+            something connecting should decide. Use close_loop() instead.
         :param float data_timeout: How long to wait for the controller to
             report a position before declaring the connection dead. 0 skips
             the check.
@@ -112,6 +118,10 @@ class XeryonController(HardwareMotionBase):
             raise ValueError("specify either host and port, or com_port")
         if host and port is None:
             raise ValueError("host given without port")
+        if host and send_settings:
+            raise ValueError(
+                "pushing the settings file does not work over the terminal server; "
+                "configure the controller over USB with the Xeryon interface instead")
 
         controller = Xeryon(COM_port=com_port, baudrate=baudrate,
                             settings_filename=self.settings_file)
@@ -122,7 +132,8 @@ class XeryonController(HardwareMotionBase):
 
         target = f"{host}:{port}" if host else com_port
         self.logger.info("Connecting to Xeryon controller at %s", target)
-        controller.start(do_reset=do_reset, send_settings=send_settings)
+        controller.start(do_reset=do_reset, send_settings=send_settings,
+                         enable_axes=enable_axes)
         self._controller = controller
         self._set_connected(True)
 
@@ -176,7 +187,8 @@ class XeryonController(HardwareMotionBase):
 
     def is_homed(self, letter: Optional[str] = None) -> bool:  # pylint: disable=W0221
         """Return whether the axis has found its encoder index."""
-        return bool(self._axis(letter).isEncoderValid())
+        axis = self._axis(letter)
+        return bool(axis.isEncoderValid(_status_word(axis)))
 
     def get_pos(self, letter: Optional[str] = None) -> Optional[float]:  # pylint: disable=W0221
         """Return the encoder position, in the axis's units."""
@@ -211,14 +223,16 @@ class XeryonController(HardwareMotionBase):
     def is_moving(self, letter: Optional[str] = None) -> bool:
         """Return whether the axis is driving towards a position.
 
-        The position-reached bit stays low after a halt, so on its own it
-        cannot tell a move in progress from one that was abandoned; the
+        The position-reached bit stays low whenever the axis isn't sitting on
+        a commanded position, including while it is parked with the loop
+        open, so on its own it cannot tell a move from an idle stage; the
         motor-on bit is what separates the two.
         """
         axis = self._axis(letter)
-        if axis.getData("STAT") is None:
+        stat = _status_word(axis)
+        if stat is None:
             return False
-        return bool(axis.isMotorOn()) and not bool(axis.isPositionReached())
+        return bool(axis.isMotorOn(stat)) and not bool(axis.isPositionReached(stat))
 
     def close_loop(self, letter: Optional[str] = None, enable: bool = True) -> bool:  # pylint: disable=W0221
         """Enable or disable closed-loop control (ENBL) on the axis."""
@@ -227,7 +241,8 @@ class XeryonController(HardwareMotionBase):
 
     def is_loop_closed(self, letter: Optional[str] = None) -> bool:  # pylint: disable=W0221
         """Return whether the axis is under closed-loop control."""
-        return bool(self._axis(letter).isClosedLoop())
+        axis = self._axis(letter)
+        return bool(axis.isClosedLoop(_status_word(axis)))
 
     def stop(self, letter: Optional[str] = None) -> None:
         """Halt one axis, or every axis when no letter is given."""
@@ -264,14 +279,33 @@ class XeryonController(HardwareMotionBase):
     def get_last_error(self, letter: Optional[str] = None) -> str:
         """Return the axis's active fault bits, or an empty string if clean."""
         axis = self._axis(letter)
-        if axis.getData("STAT") is None:
+        stat = _status_word(axis)
+        if stat is None:
             return "no status received from the controller"
-        faults = [name for name, check in _FAULT_BITS if getattr(axis, check)()]
+        faults = [name for name, check in _FAULT_BITS if getattr(axis, check)(stat)]
         return ", ".join(faults)
 
     def get_units(self, letter: Optional[str] = None) -> str:
         """Return the name of the units the axis reports."""
         return self._axis(letter).getUnit().name
+
+    def request(self, tag: str, letter: Optional[str] = None) -> None:
+        """Ask the controller to report ``tag``, e.g. "SRNO" or "HLIM".
+
+        The reply lands in the cache get_data() reads, so give it a polling
+        interval or two before looking for it.
+        """
+        self._axis(letter).sendCommand(f"{tag}=?")
+
+    def get_data(self, tag: str, letter: Optional[str] = None) -> Optional[str]:
+        """Return the last value the controller reported for ``tag``.
+
+        For anything the typed getters above don't cover, such as "SRNO" for
+        the controller's serial number or "FREQ" for the drive frequency.
+        """
+        axis = self._axis(letter)
+        value = axis.getData(tag)
+        return value if value is not None else axis.getSetting(tag)
 
     def _send_command(self, command: str, letter: Optional[str] = None) -> bool:  # pylint: disable=W0221
         """Queue a raw "TAG=value" command for an axis, or for the controller
@@ -321,23 +355,41 @@ class XeryonController(HardwareMotionBase):
         return float(axis.convertEncoderUnitsToUnits(value))
 
     def _wait_for_data(self, timeout: float) -> None:
-        """Block until every axis has reported a position.
+        """Block until every axis has reported a position and a status word.
 
         A terminal server accepts the connection whether or not the
         controller behind it is powered, so this is what tells the two apart.
+        Waiting for the status word as well keeps the first read of
+        is_homed() or is_loop_closed() from reporting a confident False for
+        an axis that simply hasn't been heard from yet.
         """
         if timeout <= 0:
             return
         deadline = time.monotonic() + timeout
         while True:
-            silent = [axis.getLetter() for axis in self._all_axes() if axis.update_nb == 0]
+            silent = [axis.getLetter() for axis in self._all_axes()
+                      if axis.update_nb == 0 or _status_word(axis) is None]
             if not silent:
                 return
             if time.monotonic() >= deadline:
                 raise TimeoutError(
-                    f"axes {silent} reported nothing within {timeout}s; check that the "
-                    "controller is powered and that its POLI setting is non-zero")
+                    f"axes {silent} reported no position or status within {timeout}s; check "
+                    "that the controller is powered and that its POLI and INFO settings make "
+                    "it stream data")
             time.sleep(_POLL_INTERVAL_S)
+
+
+def _status_word(axis: Axis) -> Optional[str]:
+    """Return the axis's last status word, or None if none has arrived.
+
+    The library seeds its cache with the integer 0 for STAT and stores what
+    the controller sends as a string, so a non-string means the axis has not
+    reported its status yet. Reading the word once and passing it to every
+    bit check also keeps a single answer from being assembled out of two
+    different status words.
+    """
+    stat = axis.getData("STAT")
+    return stat if isinstance(stat, str) else None
 
 
 def _drain_send_queue(comm, timeout: float) -> bool:
