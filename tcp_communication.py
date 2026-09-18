@@ -1,125 +1,112 @@
-""" TCP version of the Xeryon communication class """
+"""TCP transport for the vendored Xeryon library.
+
+Xeryon controllers speak the same line protocol over USB serial and over a
+serial-to-Ethernet terminal server. This module provides the socket half so
+`Xeryon.Communication` can be used unchanged against either one.
+"""
+
 import socket
-import threading
-import time
-from .Xeryon_HISPEC import outputConsole
+from typing import Optional
 
-class Communication:
-    """ TCP version of the Xeryon communication class """
-    readyToSend = None  # List that contains commands that are ready to send.
-    stop_thread = False  # Boolean for stopping the thread.
-    thread = None
-    xeryon_object = None  # Link to the "Xeryon" object.
+from .Xeryon import Communication
 
-    def __init__(self, xeryon_object, tcp_address = "127.0.0.1", tcp_port = 10001):
-        self.xeryon_object = xeryon_object
-        self.tcp_address = tcp_address
-        self.tcp_port = tcp_port
-        self.readyToSend = []
-        self.thread = None
-        self.socket = None
-        pass
-
-    def start(self, external_communication_thread = False):
-        """
-        :return: None
-        This starts the tcp communication on the specified ip address and port in a seperate thread.
-        """
-        if self.tcp_address is None:
-            raise Exception("No COM_port could automatically be found. You should provide it manually.")
-        
-
-        try:
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.connect((self.tcp_address, self.tcp_port))
-            if external_communication_thread is False:
-                self.stop_thread = False
-                self.thread = threading.Thread(target=self.__processData)
-                self.thread.daemon = True
-                self.thread.start()
-            else:
-                return self.__processData
-        except Exception as e:
-            outputConsole("An error occured while trying to connect to: " + self.tcp_address + ":" + self.tcp_port, True, True)
-            outputConsole(str(e), True, True)
-            raise Exception("Could not conect to: " + self.tcp_address + ":" + self.tcp_port)
-        
-
-    def sendCommand(self, command):
-        """
-        :param command: The command that needs to be send.
-        :return: None
-        This function adds the command to the readyToSend list.
-        """
-        self.readyToSend.append(command)
-
-    def setCOMPort(self, com_port):
-        raise NotImplementedError()
+DEFAULT_CONNECT_TIMEOUT_S = 5.0
+DEFAULT_READ_TIMEOUT_S = 0.01
 
 
-    def __processData(self, external_while_loop = False):
-        """
-        :return: None
-        This function is ran in a seperate thread.
-        It continously listens for:
-        1. If there is data to send
-            Than it just writes the command.
-            It strips all the new lines from the command and adds it's own.
-        2. If there is data to read
-            It reads the data line per line and checks if it contains "=".
-            It determines the correct axis and passes that data to that axis class.
-        3. Thread stop command.
-        """
-        try:
-            while self.stop_thread is False and self.socket is not None:  # Infinite loop
+class SocketPort:
+    """Serial-like view of a TCP socket, exposing what Communication uses."""
 
-                # SEND 10 LINES, then go further to reading.
-                dataToSend = list(self.readyToSend[0:10])
-                self.readyToSend = self.readyToSend[10:]
+    def __init__(self, host: str, port: int,
+                 read_timeout: float = DEFAULT_READ_TIMEOUT_S,
+                 connect_timeout: float = DEFAULT_CONNECT_TIMEOUT_S) -> None:
+        self._socket: Optional[socket.socket] = socket.create_connection(
+            (host, port), timeout=connect_timeout)
+        self._socket.settimeout(read_timeout)
+        self._buffer = bytearray()
 
-                for command in dataToSend:  # Send commands.
-                    self.socket.sendall(str.encode(command.rstrip("\n\r") + "\n"))
+    @property
+    def is_open(self) -> bool:
+        """Return whether the socket is still usable."""
+        return self._socket is not None
 
-                max_to_read = 10
-                try:
-                    socket_file = self.socket.makefile()
-                    while max_to_read > 0:  # While there is data to read
-                        reading = socket_file.readline()
-                        if not reading:
-                            break
-                
-                        if "=" in reading:  # Line contains a command.
+    @property
+    def in_waiting(self) -> int:
+        """Return the number of buffered bytes, reading the socket first."""
+        self._fill()
+        return len(self._buffer)
 
-                            if len(reading.split(":")) == 2: #check if an axis is specified
-                                axis = self.xeryon_object.getAxis(reading.split(":")[0])
-                                reading = reading.split(":")[1]
-                                if axis is None:
-                                    axis = self.xeryon_object.axis_list[0]
-                                axis.receiveData(reading)
+    def write(self, data: bytes) -> int:
+        """Send ``data`` to the controller."""
+        if self._socket is None:
+            raise OSError("write on a closed socket")
+        self._socket.sendall(data)
+        return len(data)
 
-                            else:
-                                # It's a single axis system
-                                axis = self.xeryon_object.axis_list[0]
-                                axis.receiveData(reading)
+    def readline(self) -> bytes:
+        """Return one buffered line including its newline, or what is left
+        of a partial line if the controller has gone quiet."""
+        if b"\n" not in self._buffer:
+            self._fill()
+        newline = self._buffer.find(b"\n")
+        if newline < 0:
+            newline = len(self._buffer) - 1
+        line = bytes(self._buffer[:newline + 1])
+        del self._buffer[:newline + 1]
+        return line
 
-                        max_to_read -= 1
-                except Exception as e:
-                    print(str(e))
+    def flush(self) -> None:
+        """Present for serial compatibility; sends are never buffered here."""
 
-                if external_while_loop is True:
-                    return None
+    def reset_input_buffer(self) -> None:
+        """Drop anything received but not yet read."""
+        self._buffer.clear()
 
-                # NOTE: (HISPEC MOD) added a delay here so that we don't use as much CPU power on this loop
-                time.sleep(0.01)
+    def reset_output_buffer(self) -> None:
+        """Present for serial compatibility; sends are never buffered here."""
 
-            # Close the tcp communication here, so we have a clean exit.     
-            self.socket.close()
-            print("Communication has stopped. ")
-        except Exception as e:
-            print("An error has occured that crashed the communication thread.")
-            print(str(e))
-            raise OSError("An error has occurred that crashed the communicaiton thread. \n" + str(e))
-  
+    def close(self) -> None:
+        """Close the socket, if it is still open."""
+        if self._socket is not None:
+            self._socket.close()
+            self._socket = None
 
-    def closeCommunication(self):
-        self.stop_thread = True
+    def _fill(self) -> None:
+        """Read whatever has arrived into the buffer without blocking."""
+        if self._socket is None:
+            return
+        while True:
+            try:
+                chunk = self._socket.recv(4096)
+            except (socket.timeout, BlockingIOError):
+                return
+            except OSError:
+                self.close()
+                return
+            if not chunk:
+                # The far end closed; without this the read loop would spin
+                # on an empty socket that is never going to produce data
+                self.close()
+                return
+            self._buffer.extend(chunk)
+            if len(chunk) < 4096:
+                return
+
+
+class TcpCommunication(Communication):
+    """Communication that reaches the controller over a terminal server."""
+
+    def __init__(self, xeryon_object, host: str, port: int) -> None:
+        # COM_port doubles as the label in the library's own error messages,
+        # and leaving it None would send Communication.start() port-hunting
+        super().__init__(xeryon_object, f"{host}:{port}", baud=0)
+        self.host = host
+        self.port = int(port)
+        self.read_timeout = DEFAULT_READ_TIMEOUT_S
+        self.connect_timeout = DEFAULT_CONNECT_TIMEOUT_S
+
+    def openPort(self) -> SocketPort:  # noqa: N802  (vendor library naming)
+        """Open the socket the communication thread reads and writes."""
+        return SocketPort(self.host, self.port,
+                          read_timeout=self.read_timeout,
+                          connect_timeout=self.connect_timeout)
