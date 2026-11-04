@@ -88,7 +88,6 @@ class XeryonController(HardwareMotionBase):
     def connect(self, host: Optional[str] = None, port: Optional[int] = None,  # pylint: disable=W0221,R0913
                 com_port: Optional[str] = None, *, baudrate: int = DEFAULT_BAUDRATE,
                 do_reset: bool = False, send_settings: bool = False,
-                enable_axes: bool = False,
                 data_timeout: float = DEFAULT_DATA_TIMEOUT_S) -> None:
         """Connect to the controller over TCP or USB serial.
 
@@ -102,10 +101,6 @@ class XeryonController(HardwareMotionBase):
         :param bool send_settings: Push the settings file to the controller.
             Off by default, leaving the controller on what it has in flash,
             and rejected outright over TCP, where it does not work.
-        :param bool enable_axes: Send ENBL=1 to every axis on connect. Off by
-            default: closing the loop on an axis whose commanded position
-            differs from where it sits makes it drive there, which is not
-            something connecting should decide. Use close_loop() instead.
         :param float data_timeout: How long to wait for the controller to
             report a position before declaring the connection dead. 0 skips
             the check.
@@ -132,8 +127,7 @@ class XeryonController(HardwareMotionBase):
 
         target = f"{host}:{port}" if host else com_port
         self.logger.info("Connecting to Xeryon controller at %s", target)
-        controller.start(do_reset=do_reset, send_settings=send_settings,
-                         enable_axes=enable_axes)
+        controller.start(do_reset=do_reset, send_settings=send_settings)
         self._controller = controller
         self._set_connected(True)
 
@@ -249,6 +243,7 @@ class XeryonController(HardwareMotionBase):
         axes = [self._axis(letter)] if letter is not None else self._all_axes()
         for axis in axes:
             axis.sendCommand("STOP=0")
+            axis.was_valid_DPOS = False
 
     def flush_commands(self, timeout: float = SEND_DRAIN_TIMEOUT_S) -> bool:
         """Wait for queued commands to reach the controller.
