@@ -34,7 +34,7 @@ class SocketPort:
     def in_waiting(self) -> int:
         """Return the number of bytes in *complete* buffered lines.
         
-        Complete lines are those terminated with a '\n'.
+        Complete lines are those terminated with a newline char.
         This is to ensure that message fragments are not passed to the 
         calling parent function. Fragments, if not parsed correctly 
         downstream, can lead to incorrect message interpretation (eg. 
