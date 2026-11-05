@@ -32,9 +32,16 @@ class SocketPort:
 
     @property
     def in_waiting(self) -> int:
-        """Return the number of buffered bytes, reading the socket first."""
+        """Return the number of bytes in *complete* buffered lines.
+        
+        Complete lines are those terminated with a '\n'.
+        This is to ensure that message fragments are not passed to the 
+        calling parent function. Fragments, if not parsed correctly 
+        downstream, can lead to incorrect message interpretation (eg. 
+        incorrect STAT values and incorrect position values, etc.)
+        """
         self._fill()
-        return len(self._buffer)
+        return self._buffer.rfind(b"\n") + 1
 
     def write(self, data: bytes) -> int:
         """Send ``data`` to the controller."""
@@ -44,13 +51,13 @@ class SocketPort:
         return len(data)
 
     def readline(self) -> bytes:
-        """Return one buffered line including its newline, or what is left
-        of a partial line if the controller has gone quiet."""
+        """Return one complete buffered line including its newline, or b""
+        if only a partial line has arrived so far."""
         if b"\n" not in self._buffer:
             self._fill()
         newline = self._buffer.find(b"\n")
         if newline < 0:
-            newline = len(self._buffer) - 1
+            return b""
         line = bytes(self._buffer[:newline + 1])
         del self._buffer[:newline + 1]
         return line

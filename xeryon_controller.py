@@ -215,18 +215,17 @@ class XeryonController(HardwareMotionBase):
         return float(axis.getDPOS())
 
     def is_moving(self, letter: Optional[str] = None) -> bool:
-        """Return whether the axis is driving towards a position.
+        """Return whether the axis is being driven.
 
-        The position-reached bit stays low whenever the axis isn't sitting on
-        a commanded position, including while it is parked with the loop
-        open, so on its own it cannot tell a move from an idle stage; the
-        motor-on bit is what separates the two.
+        The motor is on only while the stage is actively moving: it switches
+        off once the stage settles within PTOL, and back on only if the stage
+        leaves PTOL.
         """
         axis = self._axis(letter)
         stat = _status_word(axis)
         if stat is None:
             return False
-        return bool(axis.isMotorOn(stat)) and not bool(axis.isPositionReached(stat))
+        return bool(axis.isMotorOn(stat))
 
     def close_loop(self, letter: Optional[str] = None, enable: bool = True) -> bool:  # pylint: disable=W0221
         """Enable or disable closed-loop control (ENBL) on the axis."""
