@@ -168,6 +168,11 @@ class XeryonController(HardwareMotionBase):
     def home(self, letter: Optional[str] = None, blocking: bool = False) -> bool:  # pylint: disable=W0221
         """Search the encoder index, which is what references an axis.
 
+        The search is done in the positive direction. This ensures the focus 
+        axes of the fiber alignment mechanisms (FAMs) are moved forward first, 
+        away from the sides of the FEI enclosure. That reduces the chance of 
+        colliding the science fibers into the enclosure.
+
         :param str letter: Axis letter, optional on a one-axis controller.
         :param bool blocking: Wait for the index to be found.
         :return: True if the index was found, or if the search was started
@@ -175,8 +180,8 @@ class XeryonController(HardwareMotionBase):
         """
         axis = self._axis(letter)
         if blocking:
-            return bool(axis.findIndex(forceWaiting=True))
-        axis.sendCommand("INDX=0")
+            return bool(axis.findIndex(forceWaiting=True, direction=1))
+        axis.sendCommand("INDX=1")
         return True
 
     def is_homed(self, letter: Optional[str] = None) -> bool:  # pylint: disable=W0221
