@@ -25,11 +25,7 @@ them all.
    flash. Pushing them does not work over a terminal server at all, so `XeryonController` refuses
    it outright on a TCP connection; configure a controller over USB with the Xeryon interface.
 
-   `enable_axes=False` leaves the amplifiers alone rather than sending `ENBL=1`. Closing the loop
-   on an axis whose commanded position differs from where it sits makes it drive there, which
-   connecting has no business deciding.
-
-   All three default to upstream behavior.
+   Both default to the original vendor behavior for the library.
 
 2. `Communication.openPort()`.
 
